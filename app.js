@@ -18,16 +18,16 @@ const checkAuthorization = (req, res, next) => {
 };
 
 // Función para verificar y crear el directorio si no existe
-const ensureDirectoryExists = (directory) => {
-    if (!fs.existsSync(directory)) {
-        try {
-            fs.mkdirSync(directory, { recursive: true });
-        } catch (error) {
-            console.error('Error al crear la carpeta:', error);
-            throw error;
-        }
+function ensureDirectoryExists(directory) {
+    try {
+        fs.mkdirSync(directory, { recursive: true });
+    } catch (error) {
+        throw error;
     }
-};
+}
+
+// Ruta base donde se guardarán las imágenes
+const UPLOADS_BASE_PATH = path.join(__dirname, 'uploads');
 
 app.post('/upload/:folder', checkAuthorization, upload.single('file'), (req, res) => {
     const file = req.file;
@@ -39,7 +39,7 @@ app.post('/upload/:folder', checkAuthorization, upload.single('file'), (req, res
     console.log('folder: ', folder);
 
     // Define la ruta de la carpeta de destino
-    const destinationFolder = path.join(__dirname, 'uploads', folder);
+    const destinationFolder = path.join(UPLOADS_BASE_PATH, folder);
 
     try {
         // Verifica y crea el directorio si no existe
@@ -67,7 +67,6 @@ app.get('/image/:folder/:imageName', (req, res) => {
     const imageName = req.params.imageName;
     const imagePath = path.join(__dirname, 'uploads', folder, imageName);
 
-    // Envía la imagen como respuesta
     res.sendFile(imagePath);
 });
 
