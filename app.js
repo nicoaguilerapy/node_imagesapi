@@ -5,15 +5,16 @@ const fs = require('fs');
 const app = express();
 const upload = multer({ dest: 'uploads/' });
 const path = require('path');
+const cors = require('cors');
 
-// Middleware para verificar el token de autorización
+app.use(cors()); // Habilitar CORS para todas las solicitudes
+
 const checkAuthorization = (req, res, next) => {
     const token = req.headers.authorization;
 
     if (!token || token !== process.env.TOKEN) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
-
     next();
 };
 
@@ -29,14 +30,13 @@ function ensureDirectoryExists(directory) {
 // Ruta base donde se guardarán las imágenes
 const UPLOADS_BASE_PATH = path.join(__dirname, 'uploads');
 
-app.post('/upload/:folder', checkAuthorization, upload.single('file'), (req, res) => {
+app.post('/upload/:folder', checkAuthorization, upload.single('upload'), (req, res) => {
     const file = req.file;
     if (!file) {
         return res.status(400).send('No file uploaded.');
     }
     
     const folder = req.params.folder;
-    console.log('folder: ', folder);
 
     // Define la ruta de la carpeta de destino
     const destinationFolder = path.join(UPLOADS_BASE_PATH, folder);
@@ -50,10 +50,13 @@ app.post('/upload/:folder', checkAuthorization, upload.single('file'), (req, res
 
         // Mueve el archivo a la carpeta de destino
         fs.renameSync(file.path, destinationPath);
-        res.send('File uploaded successfully.');
+        const url = `${req.protocol}://${req.get('host')}/image/content/${file.originalname}`;
+
+    
+        res.status(201).json({ fileName: file.originalname, uploaded: true, url: url });
     } catch (error) {
         console.error('Error al mover el archivo:', error);
-        res.status(500).send('Error al mover el archivo.');
+        res.status(500).json({'responseText':'Error al mover el archivo.'});
     }
 });
 
