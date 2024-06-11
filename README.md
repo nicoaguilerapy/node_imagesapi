@@ -8,7 +8,7 @@ Instalación
 
 1. Clona este repositorio en tu máquina local:
 
-   git clone https://github.com/tu-usuario/node-images-api.git
+   git clone https://github.com/nicoaguilerapy/node_imagesapi.git
 
 2. Accede al directorio del proyecto:
 
@@ -59,7 +59,7 @@ Installation
 
 1. Clone this repository to your local machine:
 
-   git clone https://github.com/your-username/node-images-api.git
+   git clone https://github.com/nicoaguilerapy/node-images-api.git
 
 2. Navigate to the project directory:
 
